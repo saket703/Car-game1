@@ -26,6 +26,108 @@ float speed = 10,score = 0,imp=81;
 
 char score1[10000];
 
+/* Cosmetic-only car sprites. */
+void drawEnemyCar(int cx, int cy, int bodyColor, int halfW, int halfH)
+{
+    int l = cx - halfW, r = cx + halfW;
+    int t = cy - halfH, b = cy + halfH;
+
+    /* tyre highlights */
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(l - 4, t + 9, l + 2, b - 8);
+    bar(r - 2, t + 9, r + 4, b - 8);
+    setcolor(DARKGRAY);
+    line(l - 2, t + 12, l - 2, b - 11);
+    line(r + 2, t + 12, r + 2, b - 11);
+
+    /* Main body */
+    setfillstyle(SOLID_FILL, bodyColor);
+    bar(l + 2, t + 3, r - 2, b - 3);
+    setcolor(WHITE);
+    rectangle(l + 2, t + 3, r - 2, b - 3);
+    setfillstyle(SOLID_FILL, bodyColor);
+    bar(l + 5, t, r - 5, t + 9);
+    bar(l + 5, b - 9, r - 5, b);
+
+    /* body detail */
+    setfillstyle(SOLID_FILL, LIGHTCYAN);
+    bar(l + 6, t + 10, r - 6, t + 19);
+    bar(l + 6, b - 19, r - 6, b - 10);
+    setcolor(WHITE);
+    line(l + 6, t + 20, r - 6, t + 20);
+    line(l + 5, cy, r - 5, cy);
+
+    /* Headlights and red rear lamps */
+    setfillstyle(SOLID_FILL, YELLOW);
+    bar(l + 4, t + 3, l + 9, t + 7);
+    bar(r - 9, t + 3, r - 4, t + 7);
+    setfillstyle(SOLID_FILL, LIGHTRED);
+    bar(l + 4, b - 7, l + 9, b - 3);
+    bar(r - 9, b - 7, r - 4, b - 3);
+}
+
+void drawPlayerCarDetailed(int cx, int cy)
+{
+    int l = cx - 15, r = cx + 15;
+    int t = cy - 25, b = cy + 25;
+
+    /* Tyres */
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(l - 3, t + 8, l + 2, b - 8);
+    bar(r - 2, t + 8, r + 3, b - 8);
+
+    /* Body and bumper */
+    setfillstyle(SOLID_FILL, CYAN);
+    bar(l + 1, t + 4, r - 1, b - 4);
+    setcolor(WHITE);
+    rectangle(l + 1, t + 4, r - 1, b - 4);
+    setfillstyle(SOLID_FILL, LIGHTCYAN);
+    bar(l + 4, t + 7, r - 4, t + 11);
+
+    /* Rear window at the top; */
+    setfillstyle(SOLID_FILL, BLUE);
+    bar(l + 5, t + 12, r - 5, t + 20);
+    setfillstyle(SOLID_FILL, LIGHTCYAN);
+    bar(l + 5, b - 17, r - 5, b - 9);
+    setcolor(WHITE);
+    line(l + 4, cy, r - 4, cy);
+
+    /* Red tail lamps at the rear; white/yellow headlights at the front. */
+    setfillstyle(SOLID_FILL, LIGHTRED);
+    bar(l + 3, t + 4, l + 8, t + 8);
+    bar(r - 8, t + 4, r - 3, t + 8);
+    setfillstyle(SOLID_FILL, YELLOW);
+    bar(l + 3, b - 8, l + 8, b - 4);
+    bar(r - 8, b - 8, r - 3, b - 4);
+}
+
+void drawRoadDecor()
+{
+    int i;
+    /* Decorative shoulder strips and lane dashes only; no movement or hitbox changes. */
+    setfillstyle(SOLID_FILL, DARKGRAY);
+    bar(0, 0, getmaxx(), getmaxy());
+    setfillstyle(SOLID_FILL, BLACK);
+    bar(25, 0, 625, getmaxy());
+
+    setcolor(LIGHTGRAY);
+    line(25, 0, 25, getmaxy());
+    line(625, 0, 625, getmaxy());
+
+    setcolor(WHITE);
+    line(31, 0, 31, getmaxy());
+    line(619, 0, 619, getmaxy());
+
+    /* Dashed lane dividers. */
+    setcolor(DARKGRAY);
+    for (i = 0; i < getmaxy(); i += 75)
+    {
+	line(225, i, 225, i + 35);
+	line(425, i, 425, i + 35);
+    }
+}
+
+
 float carxPos = 100,
 
 carxPos2 = 200,
@@ -267,6 +369,7 @@ void mainmenu()
 			score=0;
 			cleardevice();
 			loading();
+			drawRoadDecor();
 			break;
 		}
 
@@ -392,7 +495,7 @@ void player ()
 	setbkcolor (8);
 	setfillstyle (INTERLEAVE_FILL, CYAN);
 	setcolor (WHITE);
-	bar (x - 15, y - 25, x + 15, y + 25);
+	drawPlayerCarDetailed((int)x, (int)y);
 	setfillstyle (SOLID_FILL, 7);
 
 	if (aa == 1)
@@ -637,16 +740,11 @@ void player ()
 	car3x = car3x + speed;
 	car4x = car4x + speed;
 	car5x = car5x + speed;
-	setfillstyle (LINE_FILL, RED);
-	bar (carxPos - 20, car1x - 30, carxPos + 20, car1x + 30);
-	setfillstyle (XHATCH_FILL, BROWN);
-	bar (carxPos2 - 20, car2x - 90, carxPos2 + 20, car2x - 30);
-	setfillstyle (LTSLASH_FILL, GREEN);
-	bar (carxPos3 - 20, car3x - 150, carxPos3 + 20, car3x - 90);
-	setfillstyle (WIDE_DOT_FILL, BLUE);
-	bar (carxPos4 - 20, car4x - 210, carxPos4 + 20, car4x - 150);
-	setfillstyle (CLOSE_DOT_FILL, YELLOW);
-	bar (carxPos5 - 20, car5x - 270, carxPos5 + 20, car5x - 210);
+	drawEnemyCar((int)carxPos,  (int)car1x,        RED,    20, 30);
+	drawEnemyCar((int)carxPos2, (int)(car2x - 60), BROWN,  20, 30);
+	drawEnemyCar((int)carxPos3, (int)(car3x - 120), GREEN, 20, 30);
+	drawEnemyCar((int)carxPos4, (int)(car4x - 180), BLUE,  20, 30);
+	drawEnemyCar((int)carxPos5, (int)(car5x - 240), YELLOW,20, 30);
 	delay (20);
 	delay (20);
 }
